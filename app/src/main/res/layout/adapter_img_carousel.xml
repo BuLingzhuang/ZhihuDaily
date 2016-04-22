@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="222dp">
+    <ImageView
+        android:id="@+id/item_img_carousel_img"
+        android:layout_width="match_parent"
+        android:layout_height="222dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"/>
+    <TextView
+        android:id="@+id/item_img_carousel_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        android:text="开始狂发朋友圈，后来学会了分组，最后就不怎么发了"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>
