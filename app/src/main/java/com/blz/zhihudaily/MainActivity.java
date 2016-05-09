@@ -1,6 +1,5 @@
 package com.blz.zhihudaily;
 
-import android.content.Context;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,23 +23,16 @@ import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.impl.presenters.MainPresenterImpl;
 import com.blz.zhihudaily.interfaces.presenters.MainPresenter;
 import com.blz.zhihudaily.interfaces.views.MainView;
-import com.blz.zhihudaily.services.BaseService;
-import com.blz.zhihudaily.utils.HttpUtils;
 import com.blz.zhihudaily.utils.Tools;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends BaseActivity implements MainView, SwipeRefreshLayout.OnRefreshListener {
 
@@ -181,7 +172,9 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         if (mRefreshLayout.isRefreshing()) {
             mRefreshLayout.setRefreshing(false);
         }
-        Tools.snackAppear("刷新成功", this, mDrawerLayout);
+        if (isRefresh){
+            Tools.snackAppear("刷新成功", this, mDrawerLayout);
+        }
     }
 
     @Override

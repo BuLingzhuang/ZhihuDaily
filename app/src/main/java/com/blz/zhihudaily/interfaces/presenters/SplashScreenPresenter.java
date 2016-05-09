@@ -7,6 +7,5 @@ package com.blz.zhihudaily.interfaces.presenters;
  */
 public interface SplashScreenPresenter {
     void start();
-
     void onDestroy();
 }
