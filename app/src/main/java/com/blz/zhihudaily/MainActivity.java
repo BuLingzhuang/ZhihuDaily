@@ -1,5 +1,6 @@
 package com.blz.zhihudaily;
 
+import android.content.Context;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +22,9 @@ import android.widget.Toast;
 import com.blz.zhihudaily.adapters.StoryAdapter;
 import com.blz.zhihudaily.entities.LatestListEntity;
 import com.blz.zhihudaily.entities.StoryEntity;
+import com.blz.zhihudaily.impl.presenters.MainPresenterImpl;
+import com.blz.zhihudaily.interfaces.presenters.MainPresenter;
+import com.blz.zhihudaily.interfaces.views.MainView;
 import com.blz.zhihudaily.services.BaseService;
 import com.blz.zhihudaily.utils.HttpUtils;
 import com.blz.zhihudaily.utils.Tools;
@@ -38,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity implements Callback<LatestListEntity>, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends BaseActivity implements MainView, SwipeRefreshLayout.OnRefreshListener {
 
     long firstTime = 0L;
 
@@ -63,6 +68,7 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
     private boolean isRefresh;
     private int mLastVisibleItem;
     private int mDate = 0;
+    private MainPresenter mPresenter;
 
 
     @Override
@@ -70,6 +76,7 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mPresenter = new MainPresenterImpl(this);
         init();
     }
 
@@ -88,10 +95,7 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
         }
         mToggle.syncState();
         mDrawerLayout.addDrawerListener(mToggle);
-        ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < 18; i++) {
-            list.add("Item-" + i);
-        }
+
         Map<Type, Integer> map = new HashMap<>();
         map.put(LatestListEntity.class, R.layout.adapter_top_story);
         map.put(StoryEntity.class, R.layout.adapter_story);
@@ -103,11 +107,11 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisibleItem + 1 == mStoryAdapter.getItemCount()) {
                     if (mDate == 0) {
-                        mDate = getDate();
+                        mDate = Tools.getDate();
                     } else {
                         mDate--;
                     }
-                    getData(false, String.valueOf(mDate));
+                    mPresenter.getStoryItem(false, String.valueOf(mDate));
                 }
             }
 
@@ -118,10 +122,17 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
                 mLastVisibleItem = layoutManager.findLastVisibleItemPosition();
             }
         });
-        mListView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list));
         mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mRefreshLayout.setOnRefreshListener(this);
-        getData(true);
+
+        // TODO: 2016/5/9 侧拉显示假数据
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < 18; i++) {
+            list.add("Item-" + i);
+        }
+        mListView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list));
+
+        mPresenter.getStoryItem();
     }
 
     @Override
@@ -155,11 +166,15 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
     }
 
     @Override
-    public void onResponse(Response<LatestListEntity> response) {
-        LatestListEntity body = response.body();
-        List<LatestListEntity.StoriesEntity> stories = body.getStories();
-        if (body.getTop_stories() != null) {
-            mStoryAdapter.addAll(body, Tools.changeSotries2Story(stories), isRefresh);
+    public void onRefresh() {
+        mPresenter.getStoryItem();
+    }
+
+    @Override
+    public void updateStoryList(LatestListEntity entity) {
+        List<LatestListEntity.StoriesEntity> stories = entity.getStories();
+        if (entity.getTop_stories() != null) {
+            mStoryAdapter.addAll(entity, Tools.changeSotries2Story(stories), isRefresh);
         } else {
             mStoryAdapter.addAll(Tools.changeSotries2Story(stories), isRefresh);
         }
@@ -170,49 +185,21 @@ public class MainActivity extends BaseActivity implements Callback<LatestListEnt
     }
 
     @Override
-    public void onFailure(Throwable t) {
-        if (mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.setRefreshing(false);
-        }
-        Tools.snackAppear("网络错误", this, mDrawerLayout);
+    public void updateError(String text) {
+        Tools.snackAppear(text, this, mDrawerLayout);
     }
-
 
     @Override
-    public void onRefresh() {
-        getData(true);
+    public void updateNavigationList() {
+
     }
 
-    public void getData(boolean b) {
-        getData(b, null);
-    }
-
-    public void getData(boolean b, String date) {
+    @Override
+    public void showRefresh(boolean b) {
         if (!mRefreshLayout.isRefreshing()) {
             mRefreshLayout.setRefreshing(true);
         }
-//        if (date == null) {
-//            date = "/20160412";
-//        }else {
-//            date = "/"+date;
-//        }
         isRefresh = b;
-        BaseService baseService = HttpUtils.getBaseService();
-        Call<LatestListEntity> recyclerCall;
-        if (date != null) {
-            recyclerCall = baseService.getLatestList(date);
-        } else {
-            recyclerCall = baseService.getLatestList();
-        }
-        recyclerCall.enqueue(this);
     }
 
-    private int getDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int year = calendar.get(Calendar.YEAR) * 10000;
-        int month = (calendar.get(Calendar.MONTH) + 1) * 100;
-        int date = calendar.get(Calendar.DATE);
-        return year + month + date;
-    }
 }

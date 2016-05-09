@@ -15,6 +15,8 @@ import com.blz.zhihudaily.entities.StoryDetailEntityDownload;
 import com.blz.zhihudaily.entities.StoryEntity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,5 +62,15 @@ public class Tools {
         }
         ((TextView) snackBarLayout.findViewById(android.support.design.R.id.snackbar_text)).setTextColor(Color.WHITE);
         snackbar.show();
+    }
+
+    //获取当前日期
+    public static int getDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int year = calendar.get(Calendar.YEAR) * 10000;
+        int month = (calendar.get(Calendar.MONTH) + 1) * 100;
+        int date = calendar.get(Calendar.DATE);
+        return year + month + date;
     }
 }

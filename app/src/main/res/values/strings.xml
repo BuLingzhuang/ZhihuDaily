@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ZhihuDaily</string>
+    <string name="story_preview">Story_Preview</string>
+    <string name="head_text">今日热闻</string>
 </resources>

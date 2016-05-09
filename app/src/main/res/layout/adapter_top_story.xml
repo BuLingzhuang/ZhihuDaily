@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="350dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="300dp">
@@ -28,7 +28,8 @@
     </RelativeLayout>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="今日热闻"
-        android:padding="17dp"/>
+        android:layout_height="50dp"
+        android:text="@string/head_text"
+        android:paddingLeft="17dp"
+        android:gravity="center_vertical"/>
 </LinearLayout>
