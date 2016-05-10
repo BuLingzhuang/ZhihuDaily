@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="350dp"
+              android:layout_height="280dp"
               android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="240dp">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/item_top_story_viewPager"
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
+            android:layout_height="240dp"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="240dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/top_story_title_bg"/>
 
         <RadioGroup
             android:id="@+id/item_top_story_rg"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:layout_alignParentBottom="true"
             android:gravity="center"
             android:orientation="horizontal"/>
@@ -35,13 +35,13 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:textColor="#fff"
-            android:textSize="22sp"/>
+            android:textSize="18sp"/>
 
     </RelativeLayout>
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:gravity="center_vertical"
         android:paddingLeft="17dp"
         android:text="@string/head_text"/>
