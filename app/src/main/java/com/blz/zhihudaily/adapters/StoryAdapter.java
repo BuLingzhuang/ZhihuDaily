@@ -3,12 +3,14 @@ package com.blz.zhihudaily.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.blz.zhihudaily.R;
@@ -61,6 +63,18 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 final List<StoryEntity> top_stories = latestListEntity.getTop_stories();
                 final StoryAdapterTopStoryViewHolder topViewHolder = (StoryAdapterTopStoryViewHolder) holder;
                 topViewHolder.mTvTitle.setText(top_stories.get(0).getTitle());
+
+                //根据条目数添加圆点
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                topViewHolder.mRadioGroup.removeAllViews();
+                for (int i = 0; i < top_stories.size(); i++) {
+                    View view = inflater.inflate(R.layout.indicator, topViewHolder.mRadioGroup, false);
+                    view.setId(i);
+                    topViewHolder.mRadioGroup.addView(view);
+                }
+                topViewHolder.mRadioGroup.check(0);
+
+                //设置ViewPager
                 topViewHolder.mViewPager.setAdapter(new TopStoryAdapter(top_stories));
                 topViewHolder.mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
@@ -69,8 +83,9 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }
 
                     @Override
-                    public void onPageSelected(int position) {
+                    public void onPageSelected(int position) {//根据ViewPager滑动切换文字说明和圆点的选中
                         topViewHolder.mTvTitle.setText(top_stories.get(position).getTitle());
+                        topViewHolder.mRadioGroup.check(position);
                     }
 
                     @Override
@@ -78,6 +93,21 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                     }
                 });
+                if (mHandler == null) {
+                    //自动播放ViewPager
+                    mHandler = new Handler(){
+                        @Override
+                        public void handleMessage(Message msg) {
+                            int nextItem = topViewHolder.mViewPager.getCurrentItem() + 1;
+                            if (nextItem >= topViewHolder.mRadioGroup.getChildCount()){
+                                nextItem = 0;
+                            }
+                            topViewHolder.mViewPager.setCurrentItem(nextItem);
+                            mHandler.sendEmptyMessageDelayed(0,5000);
+                        }
+                    };
+                    mHandler.sendEmptyMessageDelayed(0,5000);
+                }
                 break;
             case R.layout.adapter_story:
                 final StoryEntity entity = (StoryEntity) mList.get(position);
@@ -137,11 +167,13 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         private final ViewPager mViewPager;
         private final TextView mTvTitle;
+        private final RadioGroup mRadioGroup;
 
         public StoryAdapterTopStoryViewHolder(View itemView) {
             super(itemView);
             mViewPager = (ViewPager) itemView.findViewById(R.id.item_top_story_viewPager);
             mTvTitle = (TextView) itemView.findViewById(R.id.item_top_story_tvTitle);
+            mRadioGroup = (RadioGroup) itemView.findViewById(R.id.item_top_story_rg);
         }
     }
 }

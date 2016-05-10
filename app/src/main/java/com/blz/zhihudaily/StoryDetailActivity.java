@@ -16,7 +16,12 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+/**
+ * 文章详情页
+ * Created by BuLingzhuang 
+ * on 2016/5/9 16:06
+ * E-mail bulingzhuang@foxmail.com
+ */
 public class StoryDetailActivity extends BaseActivity implements Callback<StoryDetailEntityDownload> {
 
     @Bind(R.id.story_detail_tv)

@@ -18,7 +18,12 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
+/**
+ * 闪屏页
+ * Created by BuLingzhuang 
+ * on 2016/5/9 16:05
+ * E-mail bulingzhuang@foxmail.com
+ */
 public class SplashScreenActivity extends BaseActivity implements SplashScreenView {
 
     private static final String TAG = SplashScreenActivity.class.getSimpleName();

@@ -33,7 +33,12 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
+/**
+ * 主页面
+ * Created by BuLingzhuang 
+ * on 2016/5/9 16:05
+ * E-mail bulingzhuang@foxmail.com
+ */
 public class MainActivity extends BaseActivity implements MainView, SwipeRefreshLayout.OnRefreshListener {
 
     long firstTime = 0L;
