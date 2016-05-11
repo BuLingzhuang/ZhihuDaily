@@ -9,4 +9,5 @@ public class Constants {
     public static final String DB_NAME = "zhihudaily.db";
     public static final boolean DEBUG = true;
     public static final String StoryEntityIdConstant = "StoryEntityIdConstant";
+    public static final int VIEWPAGER_SCROLL_SPEED = 800;//ViewPager的自动滑动速度
 }

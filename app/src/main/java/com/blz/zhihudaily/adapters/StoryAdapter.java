@@ -1,5 +1,6 @@
 package com.blz.zhihudaily.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import com.blz.zhihudaily.StoryDetailActivity;
 import com.blz.zhihudaily.entities.LatestListEntity;
 import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.utils.Constants;
+import com.blz.zhihudaily.utils.Tools;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
@@ -36,6 +38,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private List<Object> mList;
     private Map<Type, Integer> mMap;
     private Handler mHandler;
+    private int mItemRecord = 0;
 
     public StoryAdapter(Context context, Map<Type, Integer> map) {
         mContext = context;
@@ -55,6 +58,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return null;
     }
 
+    @SuppressLint("HandlerLeak")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (holder.getItemViewType()) {
@@ -72,10 +76,12 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     view.setId(i);
                     topViewHolder.mRadioGroup.addView(view);
                 }
-                topViewHolder.mRadioGroup.check(0);
+                topViewHolder.mRadioGroup.check(mItemRecord);
 
                 //设置ViewPager
                 topViewHolder.mViewPager.setAdapter(new TopStoryAdapter(top_stories));
+                //设置ViewPager的自动滑动速度
+                Tools.setViewPagerScrollSpeed(topViewHolder.mViewPager,Constants.VIEWPAGER_SCROLL_SPEED);
                 topViewHolder.mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -102,6 +108,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                             if (nextItem >= topViewHolder.mRadioGroup.getChildCount()){
                                 nextItem = 0;
                             }
+                            mItemRecord = nextItem;
                             topViewHolder.mViewPager.setCurrentItem(nextItem);
                             mHandler.sendEmptyMessageDelayed(0,5000);
                         }

@@ -28,15 +28,15 @@ public interface BaseService {
     开始启动页的大图：'http://news-at.zhihu.com/api/4/start-image/1920*1080'
     侧拉菜单栏列表：'http://news-at.zhihu.com/api/4/themes'
     点击对应菜单栏条目加载：'http://news-at.zhihu.com/api/4/theme/id'(后跟id)*/
-    @GET("4/news/latest")
+    @GET("news/latest")
     Call<LatestListEntity> getLatestList();
 
-    @GET("4/news/before/{date}")
+    @GET("news/before/{date}")
     Call<LatestListEntity> getLatestList(@Path("date") String date);
 
-    @GET("4/start-image/1920*1080")
+    @GET("start-image/1920*1080")
     Call<SplashScreenEntity> getSplashScreen();
 
-    @GET("3/news/{id}")
+    @GET("news/{id}")
     Call<StoryDetailEntityDownload> getStoryDetail(@Path("id") String id);
 }

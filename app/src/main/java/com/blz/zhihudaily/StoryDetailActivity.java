@@ -7,8 +7,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.blz.zhihudaily.entities.StoryDetailEntityDownload;
 import com.blz.zhihudaily.services.BaseService;
@@ -32,8 +33,8 @@ import retrofit2.Response;
  */
 public class StoryDetailActivity extends SwipeBackActivity implements Callback<StoryDetailEntityDownload> {
 
-    @Bind(R.id.story_detail_tv)
-    TextView mTv;
+//    @Bind(R.id.story_detail_tv)
+//    TextView mTv;
     @Bind(R.id.story_detail_rl)
     CoordinatorLayout mRl;
     @Bind(R.id.story_detail_im)
@@ -42,6 +43,8 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
     Toolbar mToolBar;
     @Bind(R.id.story_detail_ctl)
     CollapsingToolbarLayout mStoryDetailCtl;
+    @Bind(R.id.story_detail_wv)
+    WebView mWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,13 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
                 }
             });
         }
+
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setAppCacheEnabled(true);
     }
 
     @Override
@@ -84,7 +94,7 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
     public void onBackPressed() {
         finish();
         //Genymotion上alpha动画好象有显示问题
-        overridePendingTransition(0,R.anim.finish_activity_alpha);
+        overridePendingTransition(0, R.anim.finish_activity_alpha);
     }
 
     @Override
@@ -95,8 +105,12 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
 //        getSupportActionBar().setTitle(body.getTitle());
         mStoryDetailCtl.setTitle(body.getTitle());
         Picasso.with(this).load(body.getImage()).placeholder(R.mipmap.menu_icon).error(R.mipmap.menu_icon).into(mIm);
-        mTv.setText(body.getBody());
+//        mTv.setText(body.getBody());
         // TODO: 2016/5/10 把JS转为本地网址
+        String css = "<link rel=\"stylesheet\" href=\""+body.getCss().get(0)+"\" type=\"text/css\">";
+        String html = "<html><head>" + css + "</head><body>" + body.getBody() + "</body></html>";
+        html = html.replace("<div class=\"img-place-holder\">", "");
+        mWebView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
     }
 
     @Override
