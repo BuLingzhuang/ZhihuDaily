@@ -100,13 +100,9 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
     @Override
     public void onResponse(Response<StoryDetailEntityDownload> response) {
         StoryDetailEntityDownload body = response.body();
-//        mToolBar.setTitle(body.getTitle());
-//        mToolBar.setSubtitle(body.getTitle());
-//        getSupportActionBar().setTitle(body.getTitle());
         mStoryDetailCtl.setTitle(body.getTitle());
         Picasso.with(this).load(body.getImage()).placeholder(R.mipmap.menu_icon).error(R.mipmap.menu_icon).into(mIm);
-//        mTv.setText(body.getBody());
-        // TODO: 2016/5/10 把JS转为本地网址
+
         String css = "<link rel=\"stylesheet\" href=\""+body.getCss().get(0)+"\" type=\"text/css\">";
         String html = "<html><head>" + css + "</head><body>" + body.getBody() + "</body></html>";
         html = html.replace("<div class=\"img-place-holder\">", "");
