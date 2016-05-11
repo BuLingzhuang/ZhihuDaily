@@ -23,6 +23,7 @@ import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.impl.presenters.MainPresenterImpl;
 import com.blz.zhihudaily.interfaces.presenters.MainPresenter;
 import com.blz.zhihudaily.interfaces.views.MainView;
+import com.blz.zhihudaily.ui.swipebacklayout.SwipeBackActivity;
 import com.blz.zhihudaily.utils.Tools;
 
 import java.lang.reflect.Type;

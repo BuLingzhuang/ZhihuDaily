@@ -8,10 +8,32 @@
         <item name="colorAccent">@color/colorAccent</item>
         <!--<item name="android:actionOverflowMenuStyle" tools:targetApi="lollipop">@style/CustomOverFlow</item>-->
         <item name="android:actionOverflowButtonStyle">@style/CustomOverFlow</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
+
+    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
     <style name="CustomOverFlow">
         <item name="android:src">@mipmap/moreoverflow</item>
         <item name="android:paddingRight">10dp</item>
     </style>
     <style name="AppNoActionBar" parent="Theme.AppCompat.Light.NoActionBar"/>
+
+    <style name="ExpandedAppBarTitleStyle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">#fff</item>
+    </style>
+
+    <style name="SwipeBackLayout">
+        <item name="edge_size">50dp</item>
+        <item name="shadow_left">@drawable/shadow_left</item>
+        <item name="shadow_right">@drawable/shadow_right</item>
+        <item name="shadow_bottom">@drawable/shadow_bottom</item>
+    </style>
 </resources>

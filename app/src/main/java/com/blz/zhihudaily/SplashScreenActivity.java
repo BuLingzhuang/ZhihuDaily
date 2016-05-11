@@ -14,6 +14,7 @@ import com.blz.zhihudaily.entities.SplashScreenEntity;
 import com.blz.zhihudaily.impl.presenters.SplashScreenPresenterImpl;
 import com.blz.zhihudaily.interfaces.presenters.SplashScreenPresenter;
 import com.blz.zhihudaily.interfaces.views.SplashScreenView;
+import com.blz.zhihudaily.ui.swipebacklayout.SwipeBackActivity;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -24,7 +25,7 @@ import butterknife.ButterKnife;
  * on 2016/5/9 16:05
  * E-mail bulingzhuang@foxmail.com
  */
-public class SplashScreenActivity extends BaseActivity implements SplashScreenView {
+public class SplashScreenActivity extends SwipeBackActivity implements SplashScreenView {
 
     private static final String TAG = SplashScreenActivity.class.getSimpleName();
     @Bind(R.id.SplashScreen_image)
@@ -34,8 +35,8 @@ public class SplashScreenActivity extends BaseActivity implements SplashScreenVi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash_screen);
         ButterKnife.bind(this);

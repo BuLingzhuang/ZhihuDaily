@@ -14,7 +14,7 @@ import retrofit2.Retrofit;
 public class HttpUtils {
     private static BaseService sBaseService;
     static {
-        sBaseService = new Retrofit.Builder().baseUrl("http://news-at.zhihu.com/api/4/").addConverterFactory(GsonConverterFactory.create()).build().create(BaseService.class);
+        sBaseService = new Retrofit.Builder().baseUrl("http://news-at.zhihu.com/api/").addConverterFactory(GsonConverterFactory.create()).build().create(BaseService.class);
     }
     public static BaseService getBaseService(){
         return sBaseService;
