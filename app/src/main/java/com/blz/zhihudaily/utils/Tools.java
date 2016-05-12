@@ -1,22 +1,28 @@
 package com.blz.zhihudaily.utils;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
+import com.blz.zhihudaily.BaseActivity;
 import com.blz.zhihudaily.R;
 import com.blz.zhihudaily.entities.LatestListEntity;
 import com.blz.zhihudaily.entities.StoryDetailEntity;
 import com.blz.zhihudaily.entities.StoryDetailEntityDownload;
 import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.ui.ViewPagerSlowScroller;
+import com.blz.zhihudaily.ui.swipebacklayout.SwipeBackActivity;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -56,7 +62,7 @@ public class Tools {
 //        return new StoryDetailEntity(entity.getBody(), entity.getImage_source(), entity.getTitle(), entity.getImage(), entity.getShare_url(), js, entity.getGa_prefix(), null, entity.getType(), entity.getId(), css);
 //    }
 
-    public static void snackAppear(String text, Context context, View view) {
+    public static void showSnackBar(Context context, String text, View view) {
         Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_LONG);
         //白底的SnackBar样式的方法
         Snackbar.SnackbarLayout snackBarLayout = (Snackbar.SnackbarLayout) snackbar.getView();

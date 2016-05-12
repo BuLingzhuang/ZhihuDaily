@@ -1,11 +1,13 @@
 package com.blz.zhihudaily;
 
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -23,7 +25,8 @@ import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.impl.presenters.MainPresenterImpl;
 import com.blz.zhihudaily.interfaces.presenters.MainPresenter;
 import com.blz.zhihudaily.interfaces.views.MainView;
-import com.blz.zhihudaily.ui.swipebacklayout.SwipeBackActivity;
+import com.blz.zhihudaily.utils.Constants;
+import com.blz.zhihudaily.utils.SharePreferenceUtils;
 import com.blz.zhihudaily.utils.Tools;
 
 import java.lang.reflect.Type;
@@ -34,9 +37,10 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
 /**
  * 主页面
- * Created by BuLingzhuang 
+ * Created by BuLingzhuang
  * on 2016/5/9 16:05
  * E-mail bulingzhuang@foxmail.com
  */
@@ -60,7 +64,6 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     ImageView mHeaderIcon;
     @Bind(R.id.main_refresh)
     SwipeRefreshLayout mRefreshLayout;
-    private ActionBarDrawerToggle mToggle;
     private StoryAdapter mStoryAdapter;
     private boolean isRefresh;
     private int mLastVisibleItem;
@@ -84,18 +87,37 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     }
 
     private void init() {
-        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setElevation(0);
         }
-        mToggle.syncState();
-        mDrawerLayout.addDrawerListener(mToggle);
+        toggle.syncState();
+        mDrawerLayout.addDrawerListener(toggle);
 
         Map<Type, Integer> map = new HashMap<>();
-        map.put(LatestListEntity.class, R.layout.adapter_top_story);
-        map.put(StoryEntity.class, R.layout.adapter_story);
+        if (SharePreferenceUtils.getBoolean(this, Constants.MAIN_READ_TYPE_IS_GRID)){
+            GridLayoutManager layout = new GridLayoutManager(this, 2);
+            layout.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    if (position == 0){
+                        return 2;
+                    }else {
+                        return 1;
+                    }
+                }
+            });
+            mRecyclerView.setLayoutManager(layout);
+            map.put(LatestListEntity.class, R.layout.adapter_top_story);
+            map.put(StoryEntity.class, R.layout.adapter_story_grid);
+        }else {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            map.put(LatestListEntity.class, R.layout.adapter_top_story);
+            map.put(StoryEntity.class, R.layout.adapter_story);
+        }
+
         mStoryAdapter = new StoryAdapter(this, map);
         mRecyclerView.setAdapter(mStoryAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -141,8 +163,29 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean b = super.onOptionsItemSelected(item);
-        if (mToggle.onOptionsItemSelected(item)) {
-            b = true;
+//        if (mToggle.onOptionsItemSelected(item)) {
+//            b = true;
+//        }
+        switch (item.getItemId()) {
+            case R.id.menu_message:
+                Tools.showSnackBar(this,"消息",mDrawerLayout);
+                break;
+            case R.id.menu_type:
+                if (SharePreferenceUtils.getBoolean(this, Constants.MAIN_READ_TYPE_IS_GRID)) {
+                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID,false);
+
+                }else {
+                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID,true);
+                }
+                finish();
+                startActivity(new Intent(this,this.getClass()));
+                break;
+            case R.id.menu_night:
+                Tools.showSnackBar(this,"夜间模式",mDrawerLayout);
+                break;
+            case R.id.menu_setting:
+                Tools.showSnackBar(this,"设置",mDrawerLayout);
+                break;
         }
         return b;
     }
@@ -178,14 +221,14 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         if (mRefreshLayout.isRefreshing()) {
             mRefreshLayout.setRefreshing(false);
         }
-        if (isRefresh){
-            Tools.snackAppear("刷新成功", this, mDrawerLayout);
+        if (isRefresh) {
+            Tools.showSnackBar(this, "刷新成功", mDrawerLayout);
         }
     }
 
     @Override
     public void updateError(String text) {
-        Tools.snackAppear(text, this, mDrawerLayout);
+        Tools.showSnackBar(this, text, mDrawerLayout);
     }
 
     @Override
@@ -200,5 +243,4 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         }
         isRefresh = b;
     }
-
 }

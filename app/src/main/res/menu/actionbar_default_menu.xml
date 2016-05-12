@@ -5,6 +5,9 @@
         android:icon="@mipmap/message"
         android:title="消息"
         app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_type"
+          app:showAsAction="never"
+          android:title="切换样式"/>
     <item android:id="@+id/menu_night"
         app:showAsAction="never"
         android:title="夜间模式"/>

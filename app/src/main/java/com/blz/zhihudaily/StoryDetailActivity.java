@@ -33,7 +33,7 @@ import retrofit2.Response;
  */
 public class StoryDetailActivity extends SwipeBackActivity implements Callback<StoryDetailEntityDownload> {
 
-//    @Bind(R.id.story_detail_tv)
+    //    @Bind(R.id.story_detail_tv)
 //    TextView mTv;
     @Bind(R.id.story_detail_rl)
     CoordinatorLayout mRl;
@@ -103,7 +103,7 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
         mStoryDetailCtl.setTitle(body.getTitle());
         Picasso.with(this).load(body.getImage()).placeholder(R.mipmap.menu_icon).error(R.mipmap.menu_icon).into(mIm);
 
-        String css = "<link rel=\"stylesheet\" href=\""+body.getCss().get(0)+"\" type=\"text/css\">";
+        String css = "<link rel=\"stylesheet\" href=\"" + body.getCss().get(0) + "\" type=\"text/css\">";
         String html = "<html><head>" + css + "</head><body>" + body.getBody() + "</body></html>";
         html = html.replace("<div class=\"img-place-holder\">", "");
         mWebView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
@@ -111,6 +111,6 @@ public class StoryDetailActivity extends SwipeBackActivity implements Callback<S
 
     @Override
     public void onFailure(Throwable t) {
-        Tools.snackAppear("网络错误", this, mRl);
+        Tools.showSnackBar(this, "网络错误", mRl);
     }
 }

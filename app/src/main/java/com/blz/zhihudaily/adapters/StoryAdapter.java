@@ -52,6 +52,8 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         switch (viewType) {
             case R.layout.adapter_top_story:
                 return new StoryAdapterTopStoryViewHolder(inflate);
+            case R.layout.adapter_story_grid:
+                return new StoryAdapterStoryViewHolder(inflate);
             case R.layout.adapter_story:
                 return new StoryAdapterStoryViewHolder(inflate);
         }
@@ -116,6 +118,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     mHandler.sendEmptyMessageDelayed(0,5000);
                 }
                 break;
+            case R.layout.adapter_story_grid:
             case R.layout.adapter_story:
                 final StoryEntity entity = (StoryEntity) mList.get(position);
                 StoryAdapterStoryViewHolder viewHolder = (StoryAdapterStoryViewHolder) holder;

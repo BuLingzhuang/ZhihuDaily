@@ -10,4 +10,7 @@ public class Constants {
     public static final boolean DEBUG = true;
     public static final String StoryEntityIdConstant = "StoryEntityIdConstant";
     public static final int VIEWPAGER_SCROLL_SPEED = 800;//ViewPager的自动滑动速度
+
+    public static final String SHARED_PREFERENCES = "com.blz.zhihudaily.shared";
+    public static final String MAIN_READ_TYPE_IS_GRID = "com.blz.zhihudaily.mainReadType";
 }
