@@ -6,6 +6,8 @@ import com.blz.zhihudaily.utils.DBUtils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.picasso.Picasso;
 
+import cn.sharesdk.framework.ShareSDK;
+
 /**
  * Created by 卜令壮
  * on 2016/3/28
@@ -17,5 +19,6 @@ public class BaseApplication extends Application{
         super.onCreate();
 //        Fresco.initialize(this);
         DBUtils.initialize(this);
+        ShareSDK.initSDK(this);
     }
 }

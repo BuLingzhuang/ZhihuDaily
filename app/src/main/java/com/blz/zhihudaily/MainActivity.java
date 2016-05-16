@@ -1,18 +1,19 @@
 package com.blz.zhihudaily;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,9 +26,11 @@ import com.blz.zhihudaily.entities.StoryEntity;
 import com.blz.zhihudaily.impl.presenters.MainPresenterImpl;
 import com.blz.zhihudaily.interfaces.presenters.MainPresenter;
 import com.blz.zhihudaily.interfaces.views.MainView;
+import com.blz.zhihudaily.utils.CircleTransform;
 import com.blz.zhihudaily.utils.Constants;
 import com.blz.zhihudaily.utils.SharePreferenceUtils;
 import com.blz.zhihudaily.utils.Tools;
+import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -37,6 +40,11 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.sina.weibo.SinaWeibo;
 
 /**
  * 主页面
@@ -69,6 +77,8 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     private int mLastVisibleItem;
     private int mDate = 0;
     private MainPresenter mPresenter;
+    private ActionBarDrawerToggle mToggle;
+    private Platform mWeibo;
 
 
     @Override
@@ -78,6 +88,13 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         ButterKnife.bind(this);
         mPresenter = new MainPresenterImpl(this);
         init();
+        initData();
+    }
+
+    private void initData() {
+        if (mWeibo.isValid()) {
+            Picasso.with(MainActivity.this).load(mWeibo.getDb().getUserIcon()).transform(new CircleTransform()).error(R.mipmap.menu_icon).placeholder(R.mipmap.menu_icon).into(mHeaderIcon);
+        }
     }
 
     @Override
@@ -87,24 +104,24 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     }
 
     private void init() {
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setElevation(0);
         }
-        toggle.syncState();
-        mDrawerLayout.addDrawerListener(toggle);
+        mToggle.syncState();
+        mDrawerLayout.addDrawerListener(mToggle);
 
         Map<Type, Integer> map = new HashMap<>();
-        if (SharePreferenceUtils.getBoolean(this, Constants.MAIN_READ_TYPE_IS_GRID)){
+        if (SharePreferenceUtils.getBoolean(this, Constants.MAIN_READ_TYPE_IS_GRID)) {
             GridLayoutManager layout = new GridLayoutManager(this, 2);
             layout.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    if (position == 0){
+                    if (position == 0) {
                         return 2;
-                    }else {
+                    } else {
                         return 1;
                     }
                 }
@@ -112,7 +129,7 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
             mRecyclerView.setLayoutManager(layout);
             map.put(LatestListEntity.class, R.layout.adapter_top_story);
             map.put(StoryEntity.class, R.layout.adapter_story_grid);
-        }else {
+        } else {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             map.put(LatestListEntity.class, R.layout.adapter_top_story);
             map.put(StoryEntity.class, R.layout.adapter_story);
@@ -152,6 +169,41 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         mListView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list));
 
         mPresenter.getStoryItem();
+
+        //微博授权登录相关
+        mWeibo = ShareSDK.getPlatform(SinaWeibo.NAME);
+        mWeibo.SSOSetting(false);
+        mWeibo.setPlatformActionListener(new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                Picasso.with(MainActivity.this).load(platform.getDb().getUserIcon()).transform(new CircleTransform()).error(R.mipmap.menu_icon).placeholder(R.mipmap.menu_icon).into(mHeaderIcon);
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+                Tools.showSnackBar(MainActivity.this, throwable.getMessage(), mDrawerLayout);
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+
+            }
+        });
+    }
+
+    @OnClick({R.id.menu_header_icon, R.id.menu_header_favorites, R.id.menu_header_download})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.menu_header_icon:
+                if (mWeibo != null && !mWeibo.isValid()) {
+                    mWeibo.authorize();
+                }
+                break;
+            case R.id.menu_header_favorites:
+                break;
+            case R.id.menu_header_download:
+                break;
+        }
     }
 
     @Override
@@ -163,28 +215,28 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean b = super.onOptionsItemSelected(item);
-//        if (mToggle.onOptionsItemSelected(item)) {
-//            b = true;
-//        }
+        if (mToggle.onOptionsItemSelected(item)) {
+            b = true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_message:
-                Tools.showSnackBar(this,"消息",mDrawerLayout);
+                Tools.showSnackBar(this, "消息", mDrawerLayout);
                 break;
             case R.id.menu_type:
                 if (SharePreferenceUtils.getBoolean(this, Constants.MAIN_READ_TYPE_IS_GRID)) {
-                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID,false);
+                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID, false);
 
-                }else {
-                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID,true);
+                } else {
+                    SharePreferenceUtils.setValue(this, Constants.MAIN_READ_TYPE_IS_GRID, true);
                 }
                 finish();
-                startActivity(new Intent(this,this.getClass()));
+                startActivity(new Intent(this, this.getClass()));
                 break;
             case R.id.menu_night:
-                Tools.showSnackBar(this,"夜间模式",mDrawerLayout);
+                Tools.showSnackBar(this, "夜间模式", mDrawerLayout);
                 break;
             case R.id.menu_setting:
-                Tools.showSnackBar(this,"设置",mDrawerLayout);
+                Tools.showSnackBar(this, "设置", mDrawerLayout);
                 break;
         }
         return b;
@@ -243,4 +295,5 @@ public class MainActivity extends BaseActivity implements MainView, SwipeRefresh
         }
         isRefresh = b;
     }
+
 }
